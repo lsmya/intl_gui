@@ -29,7 +29,7 @@ object ArbFileManager {
         val entries = mutableMapOf<String, ArbEntry>()
 
         for ((key, value) in jsonObject.entrySet()) {
-            if (key == "@@") continue // 跳过元数据
+            if (key.startsWith("@")) continue // 跳过元数据键和属性键
 
             val attributes = jsonObject.get("@$key")?.asJsonObject
             val entry = ArbEntry(

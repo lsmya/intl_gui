@@ -10,18 +10,16 @@ import com.google.gson.JsonObject
 import com.intellij.icons.AllIcons
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
+import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.Project
-import com.intellij.openapi.util.IconLoader
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.ui.JBColor
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.TableView
 import com.intellij.util.messages.MessageBusConnection
 import com.intellij.util.ui.ColumnInfo
 import com.intellij.util.ui.ListTableModel
 import java.awt.BorderLayout
-import java.awt.Color
 import javax.swing.*
 
 /**
@@ -31,6 +29,9 @@ class ArbEditorPanel(
     private val project: Project,
     private val parentDisposable: Disposable
 ) : JPanel(BorderLayout()) {
+    companion object {
+        private val LOG = Logger.getInstance(ArbEditorPanel::class.java)
+    }
 
     private val connection: MessageBusConnection by lazy { project.messageBus.connect(parentDisposable) }
 
@@ -99,10 +100,9 @@ class ArbEditorPanel(
                 val content = VfsUtil.loadText(file)
                 val entries = ArbFileManager.parseArbContent(content)
                 allTranslations[file.name] = entries.toMutableMap()
-                println("加载文件 ${file.name} 成功")
                 l10nFiles.add(file)
             } catch (ex: Exception) {
-                println("加载文件 ${file.name} 失败：${ex.message}")
+                LOG.warn("加载文件 ${file.name} 失败", ex)
             }
         }
 
@@ -224,7 +224,7 @@ class ArbEditorPanel(
             try {
                 savedCount += saveFile(file)
             } catch (ex: Exception) {
-                println("保存文件 ${file.name} 失败：${ex.message}")
+                LOG.warn("保存文件 ${file.name} 失败", ex)
             }
         }
         JOptionPane.showMessageDialog(

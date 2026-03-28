@@ -11,7 +11,7 @@ import com.intellij.ui.content.ContentFactory
 class IntlToolWindowFactory : ToolWindowFactory {
     
     override fun createToolWindowContent(project: Project, toolWindow: ToolWindow) {
-        val intlPanel = IntlToolWindowPanel(toolWindow.disposable)
+        val intlPanel = IntlToolWindowPanel(project, toolWindow.disposable)
         val contentFactory = ContentFactory.getInstance()
         val content = contentFactory.createContent(intlPanel, "", false)
         toolWindow.contentManager.addContent(content)

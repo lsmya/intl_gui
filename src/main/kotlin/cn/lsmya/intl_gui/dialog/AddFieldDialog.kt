@@ -13,30 +13,26 @@ import com.intellij.openapi.ui.ValidationInfo
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.components.JBTextField
+import com.intellij.ui.dsl.builder.columns
 import com.intellij.ui.dsl.builder.panel
 import javax.swing.JComponent
-import com.intellij.ui.dsl.builder.columns
 
-/**
- * 新增字段对话框
- */
-class AddFieldDialog private constructor(
-    private val project: Project,
-    private val l10nFiles: MutableList<VirtualFile>,
-    // 所有翻译文件的翻译内容
-    private val allTranslations: MutableMap<String, MutableMap<String, ArbEntry>>
+/** 新增字段对话框 */
+class AddFieldDialog
+private constructor(
+        private val project: Project,
+        private val l10nFiles: MutableList<VirtualFile>,
+        // 所有翻译文件的翻译内容
+        private val allTranslations: MutableMap<String, MutableMap<String, ArbEntry>>
 ) : DialogWrapper(project) {
 
     companion object {
         fun show(
-            project: Project,
-            l10nFiles: MutableList<VirtualFile>,
-            allTranslations: MutableMap<String, MutableMap<String, ArbEntry>>
+                project: Project,
+                l10nFiles: MutableList<VirtualFile>,
+                allTranslations: MutableMap<String, MutableMap<String, ArbEntry>>
         ) {
-            val dialog = AddFieldDialog(
-                project, l10nFiles,
-                allTranslations = allTranslations
-            )
+            val dialog = AddFieldDialog(project, l10nFiles, allTranslations = allTranslations)
             dialog.show()
         }
     }
@@ -54,31 +50,26 @@ class AddFieldDialog private constructor(
     override fun createCenterPanel(): JComponent {
         return panel {
             row("字段名:") {
-                keyNameField = textField()
-                    .columns(30)
-                    .apply {
-                        component.toolTipText = "例如：title, button_submit, error_message 等"
-                        component.text = ""
-                    }
-                    .component
+                keyNameField =
+                        textField()
+                                .columns(30)
+                                .apply {
+                                    component.toolTipText =
+                                            "例如：title, button_submit, error_message 等"
+                                    component.text = ""
+                                }
+                                .component
             }
             separator()
             valueFields.clear()
             for (file in l10nFiles) {
                 row(ArbFileManager.extractLanguageCode(file.name)) {
-                    textField()
-                        .columns(30)
-                        .apply {
-                            component.text = ""
-                        }
-                        .component.apply {
-                            valueFields[file.name] = this
-                        }
+                    textField().columns(30).apply { component.text = "" }.component.apply {
+                        valueFields[file.name] = this
+                    }
                 }
             }
-            row {
-                label("<html><font color='gray'>提示：为每个语言输入该字段的翻译值</font></html>")
-            }
+            row { label("<html><font color='gray'>提示：为每个语言输入该字段的翻译值</font></html>") }
         }
     }
 
@@ -103,15 +94,13 @@ class AddFieldDialog private constructor(
     override fun doOKAction() {
         // 创建新字段
         try {
-            val valuesMap = valueFields.mapValues { (_, textArea) ->
-                textArea.text.trim()
-            }
+            val valuesMap = valueFields.mapValues { (_, textArea) -> textArea.text.trim() }
             val key = keyNameField.text.trim()
             addNewFieldToAllFiles(
-                key = key,
-                valuesMap = valuesMap,
-                allTranslations = allTranslations,
-                l10nFiles = l10nFiles
+                    key = key,
+                    valuesMap = valuesMap,
+                    allTranslations = allTranslations,
+                    l10nFiles = l10nFiles
             )
             showSuccessToast(project, "字段创建成功")
             project.messageBus.syncPublisher(IntlRefreshMessage.TOPIC).onRefresh()
@@ -121,14 +110,12 @@ class AddFieldDialog private constructor(
         super.doOKAction()
     }
 
-    /**
-     * 在所有文件中添加新字段
-     */
+    /** 在所有文件中添加新字段 */
     private fun addNewFieldToAllFiles(
-        key: String,
-        valuesMap: Map<String, String>,
-        allTranslations: MutableMap<String, MutableMap<String, ArbEntry>>,
-        l10nFiles: MutableList<VirtualFile>,
+            key: String,
+            valuesMap: Map<String, String>,
+            allTranslations: MutableMap<String, MutableMap<String, ArbEntry>>,
+            l10nFiles: MutableList<VirtualFile>,
     ) {
         // 为每个语言文件添加新字段
         allTranslations.forEach { (fileName, entries) ->
@@ -146,19 +133,18 @@ class AddFieldDialog private constructor(
 
     private fun saveAllFiles() {
         for (file in l10nFiles) {
-            val entries = allTranslations[file.name] ?: return
+            val entries = allTranslations[file.name] ?: continue
             val jsonObject = JsonObject()
             entries.forEach { (_, entry) ->
                 jsonObject.addProperty(entry.key, entry.value)
-                entry.attributes?.let { attrs ->
-                    jsonObject.add("@${entry.key}", attrs)
-                }
+                entry.attributes?.let { attrs -> jsonObject.add("@${entry.key}", attrs) }
             }
             ApplicationManager.getApplication().runWriteAction {
-                VfsUtil.saveText(file, GsonBuilder().setPrettyPrinting().create().toJson(jsonObject))
+                VfsUtil.saveText(
+                        file,
+                        GsonBuilder().setPrettyPrinting().create().toJson(jsonObject)
+                )
             }
         }
-
     }
-
 }
