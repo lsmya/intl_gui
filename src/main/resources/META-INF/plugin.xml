@@ -1,49 +1,44 @@
-<!-- 插件配置文件。了解更多：https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <!-- 插件的唯一标识符。应为完整限定名 (FQN)。在插件版本之间不能更改。 -->
     <id>cn.lsmya.intl_gui</id>
+    <name>Intl GUI</name>
+    <vendor>lsmya</vendor>
+    <idea-version since-build="251"/>
 
-    <!-- 插件的公共名称，应采用标题大小写 (Title Case) 格式。
-         指南：https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
-    <name>Intl_gui</name>
-
-    <!-- 在插件页面显示的供应商名称或组织 ID。 -->
-    <vendor url="https://www.yourcompany.com">YourCompany</vendor>
-
-    <!-- 插件的描述信息，显示在插件页面和 IDE 插件管理器中。
-         指南：https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        专为 Flutter 开发者打造的国际化 (Intl) GUI 管理工具，提供可视化的多语言资源管理解决方案。<br>
+        A visual Flutter Intl resource editor for ARB files.<br>
         <br>
-        核心功能：<br>
+        Key capabilities:<br>
         <ul>
-            <li><strong>可视化编辑</strong>：支持 ARB/JSON 格式翻译文件的图形化编辑与管理</li>
-            <li><strong>代码生成</strong>：自动生成 Dart 国际化代码，减少重复劳动</li>
-            <li><strong>批量翻译</strong>：支持多语言一键批量翻译，提升开发效率</li>
-            <li><strong>实时预览</strong>：即时查看翻译效果，确保翻译准确性</li>
-            <li><strong>工具窗口</strong>：集成右侧工具窗口，快速访问国际化资源</li>
+            <li>Edit translation values directly in a table view</li>
+            <li>Load and manage ARB files from <code>lib/l10n</code></li>
+            <li>Add one new key across all language files in a single action</li>
+            <li>Refresh content from disk in the tool window</li>
         </ul>
         <br>
-        适用场景：Flutter 多语言项目管理、国际化资源维护、翻译内容审核等。
+        Flutter Intl ARB 资源可视化编辑工具。<br>
+        <br>
+        核心能力：<br>
+        <ul>
+            <li>在表格视图中直接编辑翻译内容</li>
+            <li>自动加载并管理 <code>lib/l10n</code> 下的 ARB 文件</li>
+            <li>一次操作为所有语言文件新增同一个 Key</li>
+            <li>在工具窗口中从磁盘刷新最新内容</li>
+        </ul>
     ]]></description>
+    <change-notes><![CDATA[
+        Initial release with ARB table editing and key creation workflow.
+        <br>
+        初始版本，支持 ARB 表格编辑与字段新增流程。
+    ]]></change-notes>
 
-    <!-- 产品和插件兼容性要求。
-         了解更多：https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
 
-    <!-- 插件定义的扩展点。
-         了解更多：https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <notificationGroup id="cn.lsmya.intl_gui" displayType="BALLOON" />
-
-        <!-- 注册右侧工具窗口 -->
+        <notificationGroup id="cn.lsmya.intl_gui" displayType="BALLOON"/>
         <toolWindow id="Intl GUI"
                     anchor="right"
                     factoryClass="cn.lsmya.intl_gui.IntlToolWindowFactory"
                     icon="/icons/intl_icon.svg"/>
         <postStartupActivity implementation="cn.lsmya.intl_gui.IntlProjectActivity"/>
-
     </extensions>
-
-
 </idea-plugin>
